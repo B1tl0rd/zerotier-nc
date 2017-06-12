@@ -106,7 +106,6 @@ def alias(alias=None, nwid=None, ztid=None):
 
             # Set member alias
             if valid_ztid(ztid):
-                pprint(ctrlr["network"][nwid]["member"])
                 ctrlr["network"][nwid]["member"][ztid]["alias"] = alias
                 return ctrlr["network"][nwid]["member"]
 
