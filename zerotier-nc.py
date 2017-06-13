@@ -199,6 +199,20 @@ def net_list():
     return new_nwids
 
 
+def net_routeadd(nwid, ip):
+    net = net_info(nwid)
+    net["routes"].append({"target": ip[0], "via": ip[1]})
+    return request("/controller/network/"+nwid, net)
+
+
+def net_routedel(nwid, ip):
+    net = net_info(nwid)
+    net["routes"] = [
+        x for x in net["routes"]
+        if x["target"] != ip[0] and x["via"] != ip[1]]
+    return request("/controller/network/"+nwid, net)
+
+
 def member_auth(nwid, ztid):
     net = net_info(nwid)
     member = net["member"][ztid]
@@ -276,6 +290,8 @@ def main():
     actions.add_argument("--net-ipdel", metavar="[IP Address]")
     actions.add_argument("--net-ipset", metavar="[IP Address]")
     actions.add_argument("--net-list", action="store_true")
+    actions.add_argument("--net-routeadd", nargs=2, metavar="[IP Address]")
+    actions.add_argument("--net-routedel", nargs=2, metavar="[IP Address]")
 
     # Member actions
     actions.add_argument("--member-auth", action="store_true")
@@ -317,6 +333,10 @@ def main():
         out = net_ipdel(nwid=args.n, ip=args.net_ipdel)
     elif args.net_list:
         out = net_list()
+    elif args.net_routeadd:
+        out = net_routeadd(nwid=args.n, ip=args.net_routeadd)
+    elif args.net_routedel:
+        out = net_routedel(nwid=args.n, ip=args.net_routedel)
     elif args.member_auth:
         out = member_auth(nwid=args.n, ztid=args.z)
     elif args.member_deauth:
