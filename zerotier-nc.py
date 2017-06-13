@@ -167,22 +167,36 @@ def net_info(nwid):
     return ctrlr["network"][nwid]
 
 
+def net_ipadd(nwid, ip):
+    ipaddrs = list(ip_network(ip).hosts())
+    start, end = tuple([str(x) for x in ipaddrs[::len(ipaddrs)-1]])
+    net = net_info(nwid)
+    net["v4AssignMode"] = {"zt": "true"}
+    net["routes"].append({"target": ip, "via": "null"})
+    net["ipAssignmentPools"].append({"ipRangeStart": start, "ipRangeEnd": end})
+    return request("/controller/network/"+nwid, net)
+
+
+def net_ipdel(nwid, ip):
+    ipaddrs = list(ip_network(ip).hosts())
+    start, end = tuple([str(x) for x in ipaddrs[::len(ipaddrs)-1]])
+    net = net_info(nwid)
+    net["v4AssignMode"] = {"zt": "true"}
+    net["routes"] = [
+        x for x in net["routes"]
+        if x["target"] != ip and x["via"] != "null"]
+    net["ipAssignmentPools"] = [
+        x for x in net["ipAssignmentPools"]
+        if x["ipRangeStart"] != start and x["ipRangeEnd"] != end]
+    return request("/controller/network/"+nwid, net)
+
+
 def net_list():
     nwids = request("/controller/network")
     new_nwids = dict()
     for nwid in nwids:
         new_nwids[nwid] = alias(nwid=nwid)
     return new_nwids
-
-
-def net_ipset(nwid, ip):
-    ipaddrs = list(ip_network(ip).hosts())
-    start, end = tuple([str(x) for x in ipaddrs[::len(ipaddrs)-1]])
-    net = net_info(nwid)
-    net["v4AssignMode"] = {"zt": "true"}
-    net["routes"] = [{"target": ip, "via": "null"}]
-    net["ipAssignmentPools"] = [{"ipRangeStart": start, "ipRangeEnd": end}]
-    return request("/controller/network/"+nwid, net)
 
 
 def member_auth(nwid, ztid):
@@ -258,6 +272,8 @@ def main():
     actions.add_argument("--net-add", action="store_true")
     actions.add_argument("--net-del", action="store_true")
     actions.add_argument("--net-info", action="store_true")
+    actions.add_argument("--net-ipadd", metavar="[IP Address]")
+    actions.add_argument("--net-ipdel", metavar="[IP Address]")
     actions.add_argument("--net-ipset", metavar="[IP Address]")
     actions.add_argument("--net-list", action="store_true")
 
@@ -295,8 +311,10 @@ def main():
         out = net_del(nwid=args.n)
     elif args.net_info:
         out = net_info(nwid=args.n)
-    elif args.net_ipset:
-        out = net_ipset(nwid=args.n, ip=args.net_ipset)
+    elif args.net_ipadd:
+        out = net_ipadd(nwid=args.n, ip=args.net_ipadd)
+    elif args.net_ipdel:
+        out = net_ipdel(nwid=args.n, ip=args.net_ipdel)
     elif args.net_list:
         out = net_list()
     elif args.member_auth:
