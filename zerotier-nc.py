@@ -215,9 +215,17 @@ def member_info(nwid, ztid):
     return member
 
 
-def member_ipset(nwid, ztid, ip):
+def member_ipadd(nwid, ztid, ip):
     member = member_info(nwid, ztid)
-    member["ipAssignments"] = [ip]
+    member["ipAssignments"].append(ip)
+    member = request("/controller/network/"+nwid+"/member/"+ztid, member)
+    return member
+
+
+def member_ipdel(nwid, ztid, ip):
+    member = member_info(nwid, ztid)
+    if ip in member["ipAssignments"]:
+        member["ipAssignments"].remove(ip)
     member = request("/controller/network/"+nwid+"/member/"+ztid, member)
     return member
 
@@ -258,7 +266,8 @@ def main():
     actions.add_argument("--member-deauth", action="store_true")
     actions.add_argument("--member-delete", action="store_true")
     actions.add_argument("--member-info", action="store_true")
-    actions.add_argument("--member-ipset", metavar="[IP Address]")
+    actions.add_argument("--member-ipadd", metavar="[IP Address]")
+    actions.add_argument("--member-ipdel", metavar="[IP Address]")
     actions.add_argument("--member-list", action="store_true")
 
     # Variables
@@ -298,8 +307,10 @@ def main():
         out = member_delete(nwid=args.n, ztid=args.z)
     elif args.member_info:
         out = member_info(nwid=args.n, ztid=args.z)
-    elif args.member_ipset:
-        out = member_ipset(nwid=args.n, ztid=args.z, ip=args.member_ipset)
+    elif args.member_ipadd:
+        out = member_ipadd(nwid=args.n, ztid=args.z, ip=args.member_ipadd)
+    elif args.member_ipdel:
+        out = member_ipdel(nwid=args.n, ztid=args.z, ip=args.member_ipdel)
     elif args.member_list:
         out = member_list(nwid=args.n)
     else:
