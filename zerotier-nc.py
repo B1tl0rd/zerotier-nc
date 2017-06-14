@@ -199,6 +199,26 @@ def net_list():
     return new_nwids
 
 
+def net_pooladd(nwid, ip):
+    ipaddrs = list(ip_network(ip).hosts())
+    start, end = tuple([str(x) for x in ipaddrs[::len(ipaddrs)-1]])
+    net = net_info(nwid)
+    net["v4AssignMode"] = {"zt": "true"}
+    net["ipAssignmentPools"].append({"ipRangeStart": start, "ipRangeEnd": end})
+    return request("/controller/network/"+nwid, net)
+
+
+def net_pooldel(nwid, ip):
+    ipaddrs = list(ip_network(ip).hosts())
+    start, end = tuple([str(x) for x in ipaddrs[::len(ipaddrs)-1]])
+    net = net_info(nwid)
+    net["v4AssignMode"] = {"zt": "true"}
+    net["ipAssignmentPools"] = [
+        x for x in net["ipAssignmentPools"]
+        if x["ipRangeStart"] != start and x["ipRangeEnd"] != end]
+    return request("/controller/network/"+nwid, net)
+
+
 def net_routeadd(nwid, ip):
     net = net_info(nwid)
     net["routes"].append({"target": ip[0], "via": ip[1]})
@@ -290,6 +310,8 @@ def main():
     actions.add_argument("--net-ipdel", metavar="[IP Address]")
     actions.add_argument("--net-ipset", metavar="[IP Address]")
     actions.add_argument("--net-list", action="store_true")
+    actions.add_argument("--net-pooladd", metavar="[IP Address]")
+    actions.add_argument("--net-pooldel", metavar="[IP Address]")
     actions.add_argument("--net-routeadd", nargs=2, metavar="[IP Address]")
     actions.add_argument("--net-routedel", nargs=2, metavar="[IP Address]")
 
@@ -333,6 +355,10 @@ def main():
         out = net_ipdel(nwid=args.n, ip=args.net_ipdel)
     elif args.net_list:
         out = net_list()
+    elif args.net_pooladd:
+        out = net_pooladd(nwid=args.n, ip=args.net_pooladd)
+    elif args.net_pooldel:
+        out = net_pooldel(nwid=args.n, ip=args.net_pooldel)
     elif args.net_routeadd:
         out = net_routeadd(nwid=args.n, ip=args.net_routeadd)
     elif args.net_routedel:
