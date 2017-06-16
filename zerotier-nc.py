@@ -153,7 +153,7 @@ def alias(alias=None, nwid=None, ztid=None):
 
 
 def net_add(nwid):
-    return request("/controller/network/"+ctrlr["ztid"]+nwid, {})
+    return request("/controller/network/"+nwid, {})
 
 
 def net_del(nwid):
@@ -332,6 +332,10 @@ def main():
 
     # Parse arguments
     args = parser.parse_args()
+
+    # Automatically extend network ID
+    if args.n and len(args.n) == 16:
+        args.n = ctrlr["ztid"] + args.n
 
     # Check if alias given
     if args.a and ":" in args.a:
