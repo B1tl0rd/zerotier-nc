@@ -308,7 +308,6 @@ def main():
     actions.add_argument("--net-info", action="store_true")
     actions.add_argument("--net-ipadd", metavar="[IP Address]")
     actions.add_argument("--net-ipdel", metavar="[IP Address]")
-    actions.add_argument("--net-ipset", metavar="[IP Address]")
     actions.add_argument("--net-list", action="store_true")
     actions.add_argument("--net-pooladd", metavar="[IP Address]")
     actions.add_argument("--net-pooldel", metavar="[IP Address]")
