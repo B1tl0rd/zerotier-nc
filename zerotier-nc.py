@@ -143,7 +143,7 @@ def alias(alias=None, nwid=None, ztid=None):
                     if nwid == x:
                         for xx, yy in ctrlr["network"][x]["member"].items():
                             if ztid == xx:
-                                return y["alias"]+":"+yy["alias"]
+                                return y["alias"], yy["alias"]
 
             # Get network alias
             else:
@@ -282,7 +282,10 @@ def member_list(nwid):
     ztids = request("/controller/network/"+nwid+"/member")
     new_ztids = dict()
     for ztid in ztids:
-        new_ztids[ztid] = alias(nwid=nwid, ztid=ztid)
+        try:
+            new_ztids[ztid] = ":".join(alias(nwid=nwid, ztid=ztid))
+        except TypeError:
+            new_ztids[ztid] = alias(nwid=nwid, ztid=ztid)
     return new_ztids
 
 
@@ -334,7 +337,7 @@ def main():
     args = parser.parse_args()
 
     # Automatically extend network ID
-    if args.n and len(args.n) == 16:
+    if args.n and len(args.n) == 6:
         args.n = ctrlr["ztid"] + args.n
 
     # Check if alias given
