@@ -73,8 +73,10 @@ def get_filepath():
         return "/var/lib/zerotier-one"
     elif platform.system() == "Darwin":
         return "/Library/Application Support/ZeroTier/One"
-    elif platfor.system() == "FreeBSD":
+    elif platform.system() == "FreeBSD":
         return "/var/db/zerotier-one"
+    elif platform.system() == "Windows":
+        return "C:\ProgramData\ZeroTier\One"
 
 
 def set_headers():
