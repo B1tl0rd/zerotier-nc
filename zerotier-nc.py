@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 ##
-# ZeroTier Network Controller
+# ZeroTier Network Controller Controller
 # By Amos <LFlare> Ng
 ##
 from ipaddress import *
@@ -286,10 +286,13 @@ def member_list(nwid):
     ztids = request("/controller/network/"+nwid+"/member")
     new_ztids = dict()
     for ztid in ztids:
+        new_ztids[ztid] = dict()
+        new_ztids[ztid]["ipAssignments"] = ", ".join(member_info(nwid, ztid)["ipAssignments"])
+
         try:
-            new_ztids[ztid] = ":".join(alias(nwid=nwid, ztid=ztid))
+            new_ztids[ztid]["alias"] = ":".join(alias(nwid=nwid, ztid=ztid))
         except TypeError:
-            new_ztids[ztid] = alias(nwid=nwid, ztid=ztid)
+            new_ztids[ztid]["alias"] = alias(nwid=nwid, ztid=ztid)
     return new_ztids
 
 
