@@ -162,6 +162,7 @@ def net_add(nwid):
 
 def net_del(nwid):
     if nwid in ctrlr["network"]:
+        ctrlr["network"][nwid].clear()
         del ctrlr["network"][nwid]
     return request("/controller/network/"+nwid, method="delete")
 
@@ -253,6 +254,7 @@ def member_deauth(nwid, ztid):
 
 def member_delete(nwid, ztid):
     member = member_info(nwid, ztid)
+    member.clear()
     del member
     return request(
         "/controller/network/"+nwid+"/member/"+ztid,
@@ -294,7 +296,8 @@ def member_list(nwid):
     new_ztids = dict()
     for ztid in ztids:
         new_ztids[ztid] = dict()
-        new_ztids[ztid]["ipAssignments"] = ", ".join(member_info(nwid, ztid)["ipAssignments"])
+        new_ztids[ztid]["ipAssignments"] = ", ".join(
+            member_info(nwid, ztid)["ipAssignments"])
 
         try:
             new_ztids[ztid]["alias"] = ":".join(alias(nwid=nwid, ztid=ztid))
