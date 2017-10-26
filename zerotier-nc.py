@@ -254,8 +254,7 @@ def member_deauth(nwid, ztid):
 
 def member_delete(nwid, ztid):
     member = member_info(nwid, ztid)
-    member.clear()
-    del member
+    del ctrlr["network"][nwid][ztid]
     return request(
         "/controller/network/"+nwid+"/member/"+ztid,
         method="delete"
