@@ -234,7 +234,7 @@ def net_routedel(nwid, ip):
     net = net_info(nwid)
     net["routes"] = [
         x for x in net["routes"]
-        if x["target"] != ip[0]]
+        if x["target"] != ip]
     return request("/controller/network/"+nwid, net)
 
 
@@ -330,7 +330,7 @@ def main():
     actions.add_argument("--net-pooladd", metavar="[IP Address]")
     actions.add_argument("--net-pooldel", metavar="[IP Address]")
     actions.add_argument("--net-routeadd", nargs=2, metavar="[IP Address]")
-    actions.add_argument("--net-routedel", nargs=2, metavar="[IP Address]")
+    actions.add_argument("--net-routedel", metavar="[IP Address]")
 
     # Member actions
     actions.add_argument("--member-auth", action="store_true")
