@@ -189,7 +189,7 @@ def net_ipdel(nwid, ip):
     net["v4AssignMode"] = {"zt": "true"}
     net["routes"] = [
         x for x in net["routes"]
-        if x["target"] != ip or x["via"] != "null"]
+        if x["target"] != ip]
     net["ipAssignmentPools"] = [
         x for x in net["ipAssignmentPools"]
         if x["ipRangeStart"] != start or x["ipRangeEnd"] != end]
@@ -234,7 +234,7 @@ def net_routedel(nwid, ip):
     net = net_info(nwid)
     net["routes"] = [
         x for x in net["routes"]
-        if x["target"] != ip[0] or x["via"] != ip[1]]
+        if x["target"] != ip[0]]
     return request("/controller/network/"+nwid, net)
 
 
