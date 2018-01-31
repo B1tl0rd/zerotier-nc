@@ -251,6 +251,18 @@ def member_deauth(nwid, ztid):
     member["authorized"] = "false"
     return request("/controller/network/"+nwid+"/member/"+ztid, member)
 
+def member_activebridge(nwid, ztid):
+    net = net_info(nwid)
+    member = net["member"][ztid]
+    member["activeBridge"] = "true"
+    return request("/controller/network/"+nwid+"/member/"+ztid, member)
+
+def member_inactivebridge(nwid, ztid):
+    net = net_info(nwid)
+    member = net["member"][ztid]
+    member["activeBridge"] = "false"
+    return request("/controller/network/"+nwid+"/member/"+ztid, member)
+
 
 def member_delete(nwid, ztid):
     del ctrlr["network"][nwid]["member"][ztid]
@@ -335,6 +347,8 @@ def main():
     # Member actions
     actions.add_argument("--member-auth", action="store_true")
     actions.add_argument("--member-deauth", action="store_true")
+    actions.add_argument("--member-activebridge", action="store_true")
+    actions.add_argument("--member-inactivebridge", action="store_true")
     actions.add_argument("--member-delete", action="store_true")
     actions.add_argument("--member-info", action="store_true")
     actions.add_argument("--member-ipset", metavar="[IP Address]")
@@ -389,6 +403,10 @@ def main():
         out = member_auth(nwid=args.n, ztid=args.z)
     elif args.member_deauth:
         out = member_deauth(nwid=args.n, ztid=args.z)
+    elif args.member_activebridge:
+        out = member_activebridge(nwid=args.n, ztid=args.z)
+    elif args.member_inactivebridge:
+        out = member_inactivebridge(nwid=args.n, ztid=args.z)
     elif args.member_delete:
         out = member_delete(nwid=args.n, ztid=args.z)
     elif args.member_info:
